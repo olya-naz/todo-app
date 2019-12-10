@@ -37,45 +37,67 @@ const ContentBlock = styled.div`
 `;
 
 const data = [
-        {
-            id: 1,
-            title: "Delectus aut autem",
-            completed: false
-        },
-        {
-            id: 2,
-            title: "Quis ut nam facilis et officia qui",
-            completed: false
-        },
-        {
-            id: 3,
-            title: "Molestiae ipsa aut voluptatibus pariatur dolor nihil",
-            completed: true
-        }
-    ];
+    {
+        id: 1,
+        title: "Delectus aut autem",
+        completed: false
+    },
+    {
+        id: 2,
+        title: "Quis ut nam facilis et officia qui",
+        completed: false
+    },
+    {
+        id: 3,
+        title: "Molestiae ipsa aut voluptatibus pariatur dolor nihil",
+        completed: true
+    }
+];
 
 export default class App extends Component {
     state = {
-        data: data,
+        data: [],
         activeFilter: 'all',
         edit: false,
         editId: null,
         editTitle: ''
     };
 
+    componentDidMount(){
+        this.getData()
+    };
+
+    getData() {
+        if (!localStorage.getItem('todoData')) {
+            localStorage.setItem('todoData', JSON.stringify([...data]));
+            this.setState({
+                data: [...data]
+            });
+        }
+        else {
+            this.setState({
+                data: JSON.parse(localStorage.getItem('todoData'))
+            });
+        }
+    };
+
     handleComplete = (id) => {
         const { data } = this.state;
         const index = data.findIndex(item => item.id === id);
         data[index].completed = !data[index].completed;
+
         this.setState({
-            data,
-            edit: false
+            data
         });
+        localStorage.setItem('todoData', JSON.stringify(data));
     };
     handleDelete = (id) => {
+        const filteredData = this.state.data.filter(item => item.id !== id);
+
         this.setState({
-            data: this.state.data.filter(item => item.id !== id)
+            data: filteredData
         });
+        localStorage.setItem('todoData', JSON.stringify(filteredData));
     };
     handleFilter = (e) => {
         this.setState({
@@ -100,24 +122,32 @@ export default class App extends Component {
         };
         newItem.key = renderId;
 
+        const newData = [newItem, ...this.state.data];
         if(title.length !== 0) {
             this.setState({
-                data: [newItem, ...this.state.data]
+                data: newData
             });
         }
+        localStorage.setItem('todoData', JSON.stringify(newData));
     };
     handleCheck = () => {
-        this.setState({
-            data: this.state.data.map(item => {
-                item.completed = true;
-                return item;
-            })
+        const checkedData = this.state.data.map(item => {
+            item.completed = true;
+            return item;
         });
+
+        this.setState({
+            data: checkedData
+        });
+        localStorage.setItem('todoData', JSON.stringify(checkedData));
     };
     handleClear = () => {
+        const uncompletedData = this.state.data.filter(item => !item.completed);
+
         this.setState({
-            data: this.state.data.filter(item => !item.completed)
+            data: uncompletedData
         });
+        localStorage.setItem('todoData', JSON.stringify(uncompletedData));
     };
     handleEdit = (id, title) => {
         this.setState({
@@ -125,22 +155,23 @@ export default class App extends Component {
             editId: id,
             editTitle: title
         });
-
-
     };
     handleUpdate = (title) => {
         const { data, editId } = this.state;
         const index = data.findIndex(item => item.id === editId);
         const oldItem = data[index];
         const newItem = {...oldItem, title: title};
+        const newData = [
+            ...this.state.data.slice(0, index),
+            newItem,
+            ...this.state.data.slice(index + 1)
+        ];
+
         this.setState({
-            data: [
-                ...this.state.data.slice(0, index),
-                newItem,
-                ...this.state.data.slice(index+1)
-            ],
+            data: newData,
             edit: false
         });
+        localStorage.setItem('todoData', JSON.stringify(newData));
     };
 
     render() {
