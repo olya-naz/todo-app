@@ -3,6 +3,7 @@
 
 ## Built With
   * React JS
+  * LocalStorage
   * Styled components
   
 ## Install
