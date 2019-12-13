@@ -6,6 +6,7 @@ import AddItemForm from "../add-item-form/add-item-form";
 import UpdateItemForm from "../update-item-form/update-item-form";
 import FilterButtons from "../filter-buttons/filter-buttons";
 import ManageComplete from '../manage-complete-buttons/manage-complete-buttons';
+import GitLink from '../git-link/git-link';
 
 import './app.css';
 
@@ -14,6 +15,9 @@ const Wrapper = styled.div`
     max-width: 100%;
     margin: 0 auto;
     padding: 40px 15px;
+    @media (max-width: 991px) {
+        padding: 110px 15px 40px;
+    }
     @media (max-width: 767px) {
         padding: 30px 15px;
     }
@@ -24,6 +28,11 @@ const TopBlock = styled.div`
     justify-content: space-between;
     margin-bottom: 30px;
     padding-left: 20px;
+    position: relative;
+    z-index: 2;
+    @media (max-width: 991px) and (min-width: 768px) {
+        padding-right: 20px;
+    }
     @media (max-width: 767px) and (orientation: portrait) {
         display: block;
         margin-bottom: 20px;
@@ -205,6 +214,7 @@ export default class App extends Component {
                                 handleClear={this.handleClear}
                                 totalCount={totalCount}
                                 completedCount={completedCount} />
+                <GitLink link="https://github.com/olya-naz/todo-app" />
             </Wrapper>
         )
     }
